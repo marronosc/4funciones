@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+
+{% block title %}Análisis de Volumen de Búsqueda - YouTube{% endblock %}
+
+{% block content %}
+<div class="keyword-volume-container">
+    <div class="keyword-volume-header">
+        <div class="logo">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 4v3h5v12h3V7h5V4H9zm-6 8v7h3v-7H3zm3 0h3v7H6v-7z"/>
+            </svg>
+        </div>
+        <h1>Análisis de Volumen de Búsqueda</h1>
+        <p>Descubre el volumen de búsquedas en YouTube usando datos de Google Ads</p>
+    </div>
+    
+    {% if error %}
+        <div class="error-message">
+            <h3>❌ Error</h3>
+            <p>{{ error }}</p>
+        </div>
+    {% endif %}
+    
+    <form method="post" class="keyword-volume-form">
+        <div class="form-group">
+            <label for="keywords">Palabras clave a analizar:</label>
+            <input type="text" name="keywords" id="keywords" 
+                   placeholder="Ej: marketing digital, seo youtube, crear contenido" required>
+            <small>Separa múltiples palabras clave con comas</small>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label for="location_id">País/Región:</label>
+                <select name="location_id" id="location_id">
+                    <option value="2724" selected>España</option>
+                    <option value="2840">Estados Unidos</option>
+                    <option value="2484">México</option>
+                    <option value="2032">Argentina</option>
+                    <option value="2152">Chile</option>
+                    <option value="2170">Colombia</option>
+                    <option value="2604">Perú</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="language_id">Idioma:</label>
+                <select name="language_id" id="language_id">
+                    <option value="1003" selected>Español</option>
+                    <option value="1000">Inglés</option>
+                    <option value="1014">Portugués</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="customer_id">ID de Cliente de Google Ads (opcional):</label>
+            <input type="text" name="customer_id" id="customer_id" 
+                   placeholder="Ej: 123-456-7890">
+            <small>Si no lo especificas, se usará el configurado por defecto</small>
+        </div>
+        
+        <input type="submit" value="Analizar Volumen de Búsqueda" class="button">
+    </form>
+    
+    <div class="info-section">
+        <h3>¿Cómo funciona esta herramienta?</h3>
+        <div class="analysis-features">
+            <div class="feature">
+                <div class="feature-icon">🔍</div>
+                <div class="feature-content">
+                    <h4>Datos de Google Ads</h4>
+                    <p>Utiliza la API de Google Ads para obtener volúmenes de búsqueda reales</p>
+                </div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📊</div>
+                <div class="feature-content">
+                    <h4>Estimación para YouTube</h4>
+                    <p>Calcula la diferencia entre "Google" y "Google + Partners" para estimar YouTube</p>
+                </div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🎯</div>
+                <div class="feature-content">
+                    <h4>Score de Oportunidad</h4>
+                    <p>Evalúa cada palabra clave según volumen y competencia</p>
+                </div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📈</div>
+                <div class="feature-content">
+                    <h4>Tendencias Mensuales</h4>
+                    <p>Muestra la evolución del volumen de búsqueda en los últimos 12 meses</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="methodology-section">
+        <h3>📐 Metodología de Cálculo</h3>
+        <div class="methodology-content">
+            <p><strong>Volumen de YouTube = Volumen (Google + Partners) - Volumen (Solo Google)</strong></p>
+            <p>YouTube es parte de la red de partners de búsqueda de Google, por lo que esta diferencia nos da una estimación del volumen de búsquedas en YouTube.</p>
+            <ul>
+                <li>Si la diferencia es menor al 10%, aplicamos un factor de corrección del 15%</li>
+                <li>El score de oportunidad combina volumen (50%) y competencia (50%)</li>
+                <li>Los datos se basan en promedios mensuales de los últimos 12 meses</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="config-check-link">
+        <a href="/keyword-volume/check-config">🔧 Verificar configuración de Google Ads</a>
+    </div>
+    
+    <a href="/" class="home-link">← Volver a la página principal</a>
+</div>
+
+<style>
+.keyword-volume-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 0 20px;
+}
+
+.keyword-volume-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.keyword-volume-header .logo svg {
+    width: 80px;
+    height: 80px;
+    fill: var(--primary-color);
+}
+
+.keyword-volume-form {
+    background-color: var(--card-background);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 3rem;
+    box-shadow: 0 4px 6px var(--shadow-color);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.methodology-section {
+    background-color: #e3f2fd;
+    border-left: 4px solid #2196f3;
+    padding: 1.5rem;
+    margin: 2rem 0;
+    border-radius: 0 8px 8px 0;
+}
+
+.methodology-content {
+    margin-top: 1rem;
+}
+
+.methodology-content p {
+    margin-bottom: 1rem;
+}
+
+.methodology-content ul {
+    margin-left: 1.5rem;
+}
+
+.config-check-link {
+    text-align: center;
+    margin: 2rem 0;
+}
+
+.config-check-link a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.config-check-link a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}

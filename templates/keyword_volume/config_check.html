@@ -1,0 +1,307 @@
+{% extends "base.html" %}
+
+{% block title %}Verificación de Configuración - Google Ads{% endblock %}
+
+{% block content %}
+<div class="config-container">
+    <div class="config-header">
+        <div class="config-icon">🔧</div>
+        <h1>Verificación de Configuración de Google Ads</h1>
+    </div>
+    
+    <div class="config-content">
+        <div class="config-status-summary">
+            {% if all_configured %}
+            <div class="status-message success">
+                <span class="status-icon">✅</span>
+                <h3>Configuración completa</h3>
+                <p>Todas las credenciales necesarias están configuradas</p>
+            </div>
+            {% else %}
+            <div class="status-message warning">
+                <span class="status-icon">⚠️</span>
+                <h3>Configuración incompleta</h3>
+                <p>Faltan algunas credenciales necesarias</p>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="config-items">
+            <h3>Estado de las credenciales:</h3>
+            <table class="config-table">
+                <thead>
+                    <tr>
+                        <th>Variable de Entorno</th>
+                        <th>Estado</th>
+                        <th>Descripción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>GOOGLE_ADS_DEVELOPER_TOKEN</code></td>
+                        <td>
+                            {% if config_status.developer_token %}
+                                <span class="status-badge success">✅ Configurado</span>
+                            {% else %}
+                                <span class="status-badge error">❌ Falta</span>
+                            {% endif %}
+                        </td>
+                        <td>Token de desarrollador de Google Ads API</td>
+                    </tr>
+                    <tr>
+                        <td><code>GOOGLE_ADS_REFRESH_TOKEN</code></td>
+                        <td>
+                            {% if config_status.refresh_token %}
+                                <span class="status-badge success">✅ Configurado</span>
+                            {% else %}
+                                <span class="status-badge error">❌ Falta</span>
+                            {% endif %}
+                        </td>
+                        <td>Token de actualización OAuth2</td>
+                    </tr>
+                    <tr>
+                        <td><code>GOOGLE_ADS_CLIENT_ID</code></td>
+                        <td>
+                            {% if config_status.client_id %}
+                                <span class="status-badge success">✅ Configurado</span>
+                            {% else %}
+                                <span class="status-badge error">❌ Falta</span>
+                            {% endif %}
+                        </td>
+                        <td>ID de cliente OAuth2</td>
+                    </tr>
+                    <tr>
+                        <td><code>GOOGLE_ADS_CLIENT_SECRET</code></td>
+                        <td>
+                            {% if config_status.client_secret %}
+                                <span class="status-badge success">✅ Configurado</span>
+                            {% else %}
+                                <span class="status-badge error">❌ Falta</span>
+                            {% endif %}
+                        </td>
+                        <td>Secreto de cliente OAuth2</td>
+                    </tr>
+                    <tr>
+                        <td><code>GOOGLE_ADS_CUSTOMER_ID</code></td>
+                        <td>
+                            {% if config_status.customer_id %}
+                                <span class="status-badge success">✅ Configurado</span>
+                            {% else %}
+                                <span class="status-badge warning">⚠️ Opcional</span>
+                            {% endif %}
+                        </td>
+                        <td>ID de cuenta de Google Ads por defecto</td>
+                    </tr>
+                    <tr>
+                        <td><code>GOOGLE_ADS_LOGIN_CUSTOMER_ID</code></td>
+                        <td>
+                            {% if config_status.login_customer_id %}
+                                <span class="status-badge success">✅ Configurado</span>
+                            {% else %}
+                                <span class="status-badge warning">⚠️ Opcional</span>
+                            {% endif %}
+                        </td>
+                        <td>ID de cuenta MCC (solo si usas una cuenta administradora)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="setup-instructions">
+            <h3>📚 Instrucciones de configuración:</h3>
+            <ol>
+                <li>
+                    <strong>Obtén un Developer Token:</strong>
+                    <p>Ve a tu cuenta de Google Ads → Herramientas → API Center → Solicita acceso</p>
+                </li>
+                <li>
+                    <strong>Crea credenciales OAuth2:</strong>
+                    <p>En Google Cloud Console → APIs y servicios → Credenciales → Crear credenciales → ID de cliente OAuth</p>
+                </li>
+                <li>
+                    <strong>Genera el Refresh Token:</strong>
+                    <p>Usa la herramienta de Google Ads API o el OAuth2 Playground</p>
+                </li>
+                <li>
+                    <strong>Configura las variables de entorno:</strong>
+                    <p>Añade las variables en tu archivo <code>.env</code> o en la configuración de tu servidor</p>
+                </li>
+            </ol>
+        </div>
+        
+        <div class="helpful-links">
+            <h3>🔗 Enlaces útiles:</h3>
+            <ul>
+                <li><a href="https://developers.google.com/google-ads/api/docs/first-call/overview" target="_blank">Documentación oficial de Google Ads API</a></li>
+                <li><a href="https://developers.google.com/google-ads/api/docs/oauth/overview" target="_blank">Guía de autenticación OAuth2</a></li>
+                <li><a href="https://developers.google.com/oauthplayground/" target="_blank">OAuth2 Playground</a></li>
+                <li><a href="https://ads.google.com/aw/apicenter" target="_blank">Google Ads API Center</a></li>
+            </ul>
+        </div>
+        
+        <div class="config-actions">
+            <a href="/keyword-volume" class="button">← Volver al análisis</a>
+            <a href="/" class="button secondary">🏠 Inicio</a>
+        </div>
+    </div>
+</div>
+
+<style>
+.config-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 0 20px;
+}
+
+.config-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.config-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.config-content {
+    background-color: var(--card-background);
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px var(--shadow-color);
+}
+
+.config-status-summary {
+    margin-bottom: 2rem;
+}
+
+.status-message {
+    padding: 1.5rem;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.status-message.success {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
+}
+
+.status-message.warning {
+    background-color: #fff3cd;
+    border: 1px solid #ffeeba;
+    color: #856404;
+}
+
+.status-icon {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.config-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+.config-table th,
+.config-table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.config-table th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+}
+
+.config-table code {
+    background-color: #f8f9fa;
+    padding: 0.2rem 0.4rem;
+    border-radius: 3px;
+    font-family: monospace;
+    font-size: 0.9rem;
+}
+
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.status-badge.success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-badge.warning {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.status-badge.error {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.setup-instructions,
+.helpful-links {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+.setup-instructions ol {
+    margin-left: 1.5rem;
+}
+
+.setup-instructions li {
+    margin-bottom: 1rem;
+}
+
+.setup-instructions p {
+    margin-top: 0.5rem;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.helpful-links ul {
+    list-style: none;
+    padding: 0;
+}
+
+.helpful-links li {
+    margin-bottom: 0.5rem;
+}
+
+.helpful-links a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.helpful-links a:hover {
+    text-decoration: underline;
+}
+
+.config-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+@media (max-width: 768px) {
+    .config-table {
+        font-size: 0.85rem;
+    }
+    
+    .config-table th,
+    .config-table td {
+        padding: 0.5rem;
+    }
+}
+</style>
+{% endblock %}

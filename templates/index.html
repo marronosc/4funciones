@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}YouTube Tools - Página Principal{% endblock %}
+
+{% block content %}
+<div class="main-container">
+    <div class="card">
+        <div class="logo">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+            </svg>
+        </div>
+        <h1>Herramientas YouTube</h1>
+        <p>Selecciona una de nuestras herramientas para trabajar con YouTube</p>
+    </div>
+    
+    <div class="tools">
+        <div class="card tool-card">
+            <h2>Extractor de ID de Canal</h2>
+            <p>Esta herramienta te permite obtener el ID de un canal de YouTube a partir de cualquier URL relacionada con el canal (URL del canal, de un video, etc).</p>
+            <a href="/extractor" class="button">Ir al Extractor</a>
+        </div>
+        
+        <div class="card tool-card">
+            <h2>Análisis SEO YouTube</h2>
+            <p>Analiza los resultados de búsqueda en YouTube para una palabra clave específica y obtén estadísticas detalladas.</p>
+            <a href="/seo" class="button">Ir al Analizador SEO</a>
+        </div>
+        
+        <div class="card tool-card">
+            <h2>Verificador de Posición de Canal</h2>
+            <p>Comprueba si los videos de un canal específico aparecen entre los primeros 100-200 resultados de búsqueda para una palabra clave.</p>
+            <a href="/keyword-position" class="button">Verificar Posición</a>
+        </div>
+        
+        <div class="card tool-card">
+            <h2>Volumen de Búsqueda YouTube</h2>
+            <p>Estima el volumen de búsquedas en YouTube usando datos de Google Ads. Calcula la diferencia entre Google y Google + Partners.</p>
+            <a href="/keyword-volume" class="button">Analizar Volumen</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

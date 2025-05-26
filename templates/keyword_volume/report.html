@@ -1,0 +1,449 @@
+{% extends "base.html" %}
+
+{% block title %}Reporte de Volumen: {{ keywords|join(', ') }}{% endblock %}
+
+{% block content %}
+<div class="report-container">
+    <div class="report-header">
+        <h1>📊 Análisis de Volumen de Búsqueda</h1>
+        <div class="report-summary">
+            <div class="summary-item">
+                <strong>{{ result.summary.total_keywords }}</strong>
+                <span>Palabras analizadas</span>
+            </div>
+            <div class="summary-item">
+                <strong>{{ "{:,}".format(result.summary.total_google_volume) }}</strong>
+                <span>Búsquedas totales (Google)</span>
+            </div>
+            <div class="summary-item">
+                <strong>{{ "{:,}".format(result.summary.total_youtube_estimated) }}</strong>
+                <span>Búsquedas estimadas (YouTube)</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="report-meta">
+        <span>📍 {{ location_name }}</span>
+        <span>🌐 {{ language_name }}</span>
+        <span>📅 {{ "now"|date("d/m/Y") }}</span>
+    </div>
+    
+    <a href="/keyword-volume" class="back-link">← Realizar nuevo análisis</a>
+
+    <!-- Resultados por Palabra Clave -->
+    <div class="section">
+        <h2 class="section-title">
+            <span class="section-icon">🔍</span>
+            Análisis Detallado por Palabra Clave
+        </h2>
+        
+        <div class="keywords-analysis">
+            {% for keyword_data in result.data %}
+            <div class="keyword-card">
+                <div class="keyword-header">
+                    <h3>{{ keyword_data.keyword }}</h3>
+                    <div class="opportunity-score" style="background-color: {% if keyword_data.opportunity_score >= 70 %}#28a745{% elif keyword_data.opportunity_score >= 40 %}#ffc107{% else %}#dc3545{% endif %}">
+                        {{ keyword_data.opportunity_score }}/100
+                    </div>
+                </div>
+                
+                <div class="volume-metrics">
+                    <div class="metric">
+                        <span class="metric-label">Google Total</span>
+                        <span class="metric-value">{{ keyword_data.formatted_google_volume }}</span>
+                        <span class="metric-detail">{{ "{:,}".format(keyword_data.google_total_volume) }} búsquedas/mes</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Solo Google</span>
+                        <span class="metric-value">{{ "{:,}".format(keyword_data.google_only_volume) }}</span>
+                        <span class="metric-detail">Sin partners</span>
+                    </div>
+                    <div class="metric highlight">
+                        <span class="metric-label">YouTube Estimado</span>
+                        <span class="metric-value">{{ keyword_data.formatted_youtube_volume }}</span>
+                        <span class="metric-detail">{{ "{:,}".format(keyword_data.youtube_estimated_volume) }} búsquedas/mes</span>
+                    </div>
+                </div>
+                
+                <div class="keyword-insights">
+                    <div class="insight">
+                        <span class="insight-label">Competencia:</span>
+                        <span class="competition-badge competition-{{ keyword_data.competition|lower }}">
+                            {{ keyword_data.competition }}
+                        </span>
+                    </div>
+                    {% if keyword_data.competition_index %}
+                    <div class="insight">
+                        <span class="insight-label">Índice de competencia:</span>
+                        <span>{{ keyword_data.competition_index }}/100</span>
+                    </div>
+                    {% endif %}
+                    {% if keyword_data.low_top_of_page_bid %}
+                    <div class="insight">
+                        <span class="insight-label">CPC estimado:</span>
+                        <span>${{ "%.2f"|format(keyword_data.low_top_of_page_bid) }} - ${{ "%.2f"|format(keyword_data.high_top_of_page_bid) }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                {% if keyword_data.monthly_search_volumes %}
+                <div class="trend-chart">
+                    <h4>Tendencia de búsqueda (últimos 12 meses)</h4>
+                    <div class="chart-container" data-volumes='{{ keyword_data.monthly_search_volumes|tojson }}'>
+                        <!-- Aquí se renderizará un gráfico con JavaScript -->
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Resumen de Oportunidades -->
+    <div class="section">
+        <h2 class="section-title">
+            <span class="section-icon">💡</span>
+            Resumen de Oportunidades para YouTube
+        </h2>
+        
+        <div class="opportunities-grid">
+            <div class="opportunity-category">
+                <h3>🟢 Alta Oportunidad</h3>
+                <p>Palabras con score ≥ 70</p>
+                <ul>
+                    {% for keyword in result.data %}
+                        {% if keyword.opportunity_score >= 70 %}
+                        <li>
+                            <strong>{{ keyword.keyword }}</strong>
+                            <span>{{ keyword.formatted_youtube_volume }} búsquedas</span>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+            
+            <div class="opportunity-category">
+                <h3>🟡 Oportunidad Media</h3>
+                <p>Palabras con score 40-69</p>
+                <ul>
+                    {% for keyword in result.data %}
+                        {% if keyword.opportunity_score >= 40 and keyword.opportunity_score < 70 %}
+                        <li>
+                            <strong>{{ keyword.keyword }}</strong>
+                            <span>{{ keyword.formatted_youtube_volume }} búsquedas</span>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+            
+            <div class="opportunity-category">
+                <h3>🔴 Baja Oportunidad</h3>
+                <p>Palabras con score < 40</p>
+                <ul>
+                    {% for keyword in result.data %}
+                        {% if keyword.opportunity_score < 40 %}
+                        <li>
+                            <strong>{{ keyword.keyword }}</strong>
+                            <span>{{ keyword.formatted_youtube_volume }} búsquedas</span>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recomendaciones -->
+    <div class="section">
+        <h2 class="section-title">
+            <span class="section-icon">📝</span>
+            Recomendaciones para tu Estrategia en YouTube
+        </h2>
+        
+        <div class="recommendations">
+            {% set high_opportunity = result.data|selectattr('opportunity_score', '>=', 70)|list %}
+            {% set high_volume = result.data|selectattr('youtube_estimated_volume', '>=', 1000)|list %}
+            
+            {% if high_opportunity %}
+            <div class="recommendation">
+                <h4>✅ Palabras clave prioritarias</h4>
+                <p>Enfócate en estas palabras con alta oportunidad: 
+                {% for kw in high_opportunity[:3] %}
+                    <strong>{{ kw.keyword }}</strong>{% if not loop.last %}, {% endif %}
+                {% endfor %}
+                </p>
+            </div>
+            {% endif %}
+            
+            {% if high_volume %}
+            <div class="recommendation">
+                <h4>📈 Alto volumen de búsqueda</h4>
+                <p>Estas palabras tienen el mayor potencial de alcance en YouTube:
+                {% for kw in high_volume[:3] %}
+                    <strong>{{ kw.keyword }}</strong> ({{ kw.formatted_youtube_volume }}){% if not loop.last %}, {% endif %}
+                {% endfor %}
+                </p>
+            </div>
+            {% endif %}
+            
+            <div class="recommendation">
+                <h4>💡 Estrategia de contenido</h4>
+                <p>Crea videos que combinen palabras clave de alto volumen con baja competencia para maximizar tu visibilidad en YouTube.</p>
+            </div>
+        </div>
+    </div>
+    
+    <a href="/keyword-volume" class="back-link">← Realizar nuevo análisis</a>
+</div>
+
+<style>
+.report-meta {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin: 1rem 0 2rem;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.keywords-analysis {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.keyword-card {
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 2px 4px var(--shadow-color);
+}
+
+.keyword-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.keyword-header h3 {
+    margin: 0;
+    color: var(--secondary-color);
+}
+
+.opportunity-score {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    color: white;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.volume-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.metric {
+    text-align: center;
+    padding: 1rem;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.metric.highlight {
+    background-color: #e3f2fd;
+    border: 2px solid #2196f3;
+}
+
+.metric-label {
+    display: block;
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+}
+
+.metric-value {
+    display: block;
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: var(--secondary-color);
+}
+
+.metric-detail {
+    display: block;
+    font-size: 0.8rem;
+    color: #999;
+    margin-top: 0.25rem;
+}
+
+.keyword-insights {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+}
+
+.insight {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.insight-label {
+    font-weight: 500;
+    color: #666;
+}
+
+.competition-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.competition-bajo {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.competition-medio {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.competition-alto {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.trend-chart {
+    margin-top: 1.5rem;
+}
+
+.trend-chart h4 {
+    margin-bottom: 1rem;
+    color: var(--secondary-color);
+    font-size: 1rem;
+}
+
+.chart-container {
+    height: 200px;
+    background-color: white;
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.opportunities-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.opportunity-category {
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+}
+
+.opportunity-category h3 {
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
+}
+
+.opportunity-category p {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.opportunity-category ul {
+    list-style: none;
+    padding: 0;
+}
+
+.opportunity-category li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.opportunity-category li:last-child {
+    border-bottom: none;
+}
+
+.recommendations {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.recommendation {
+    background-color: #e7f3ff;
+    border-left: 4px solid var(--primary-color);
+    padding: 1.5rem;
+    border-radius: 0 8px 8px 0;
+}
+
+.recommendation h4 {
+    margin-bottom: 0.5rem;
+    color: var(--secondary-color);
+}
+
+@media (max-width: 768px) {
+    .report-meta {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .volume-metrics {
+        grid-template-columns: 1fr;
+    }
+    
+    .keyword-insights {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .opportunities-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<script>
+// Renderizar gráficos de tendencia si hay datos
+document.addEventListener('DOMContentLoaded', function() {
+    const chartContainers = document.querySelectorAll('.chart-container');
+    
+    chartContainers.forEach(container => {
+        const volumes = JSON.parse(container.dataset.volumes || '[]');
+        if (volumes.length > 0) {
+            // Aquí podrías integrar una librería de gráficos como Chart.js
+            // Por ahora, mostraremos los datos como texto
+            const monthNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+            let html = '<div style="display: flex; justify-content: space-around; align-items: end; height: 100%;">';
+            
+            volumes.forEach(v => {
+                const height = Math.max(10, (v.volume / Math.max(...volumes.map(vol => vol.volume))) * 100);
+                html += `
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
+                        <div style="width: 30px; height: ${height}%; background-color: var(--primary-color); border-radius: 4px 4px 0 0;"></div>
+                        <small style="font-size: 0.7rem; color: #666;">${monthNames[v.month - 1]}</small>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            container.innerHTML = html;
+        }
+    });
+});
+</script>
+{% endblock %}

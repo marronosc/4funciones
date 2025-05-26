@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block title %}Análisis SEO: {{ keyword }}{% endblock %}
+
+{% block content %}
+<div class="report-container">
+    <div class="report-header">
+        <h1>📊 Análisis SEO para: "{{ keyword }}"</h1>
+        <div class="report-summary">
+            <div class="summary-item">
+                <strong>{{ videos|length }}</strong>
+                <span>Videos analizados</span>
+            </div>
+            <div class="summary-item">
+                <strong>{{ unique_channels_count }}</strong>
+                <span>Canales únicos</span>
+            </div>
+            <div class="summary-item">
+                <strong>{{ format_number(total_stats.total_views) }}</strong>
+                <span>Visualizaciones totales</span>
+            </div>
+        </div>
+    </div>
+    
+    <a href="/seo" class="back-link">← Realizar nuevo análisis</a>
+
+    <!-- Estadísticas Promedio -->
+    <div class="section">
+        <h2 class="section-title">
+            <span class="section-icon">📈</span>
+            Estadísticas Promedio
+        </h2>
+        <div class="stats-grid">
+            <div class="stat-box">
+                <h4>Promedio de Visualizaciones</h4>
+                <div class="stat-value">{{ format_number(avg_views_videos) }}</div>
+            </div>
+            <div class="stat-box">
+                <h4>Promedio de Me gustas</h4>
+                <div class="stat-value">{{ format_number(avg_likes_videos) }}</div>
+            </div>
+            <div class="stat-box">
+                <h4>Promedio de Comentarios</h4>
+                <div class="stat-value">{{ format_number(avg_comments_videos) }}</div>
+            </div>
+            <div class="stat-box">
+                <h4>Duración Promedio</h4>
+                <div class="stat-value">{{ format_duration(avg_duration) }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Totales -->
+    <div class="section">
+        <h2 class="section-title">
+            <span class="section-icon">🔢</span>
+            Totales Acumulados
+        </h2>
+        <div class="stats-grid totals">
+            <div class="stat-box total-box">
+                <h4>Total Visualizaciones</h4>
+                <div class="stat-value">{{ format_number(total_stats.total_views) }}</div>
+            </div>
+            <div class="stat-box total-box">
+                <h4>Total Me gustas</h4>
+                <div class="stat-value">{{ format_number(total_stats.total_likes) }}</div>
+            </div>
+            <div class="stat-box total-box">
+                <h4>Total Comentarios</h4>
+                <div class="stat-value">{{ format_number(total_stats.total_comments) }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Videos Encontrados -->
+    <div class="section">
+        <h2 class="section-title">
+            <span class="section-icon">🎥</span>
+            Videos Analizados ({{ videos|length }})
+        </h2>
+        <div class="videos-grid">
+            {% for video in videos %}
+            <div class="video-card">
+                <div class="video-thumbnail">
+                    <img src="{{ video.thumbnail_url }}" alt="Miniatura del video" loading="lazy">
+                    <div class="video-duration">{{ format_duration(video.duration) }}</div>
+                </div>
+                <div class="video-info">
+                    <h3><a href="{{ video.video_url }}" target="_blank" rel="noopener">{{ video.title }}</a></h3>
+                    <p class="channel-name">📺 {{ video.channel_title }}</p>
+                    <div class="video-stats">
+                        <div class="stat">
+                            <span class="stat-icon">👁️</span>
+                            <span>{{ format_number(video.views) }}</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-icon">👍</span>
+                            <span>{{ format_number(video.likes) }}</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-icon">💬</span>
+                            <span>{{ format_number(video.comments) }}</span>
+                        </div>
+                    </div>
+                    <div class="video-meta">
+                        <span>📅 {{ format_date(video.published_at) }}</span>
+                        <span>🏷️ {{ video.category }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Estadísticas por Canal -->
+    <div class="section">
+        <h2 class="section-title">
+            <span class="section-icon">👤</span>
+            Rendimiento por Canal
+        </h2>
+        <div class="channels-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Canal</th>
+                        <th>Videos</th>
+                        <th>Visualizaciones</th>
+                        <th>Me gustas</th>
+                        <th>Comentarios</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for channel, stats in channel_stats.items() %}
+                    <tr>
+                        <td>
+                            <div class="channel-info">
+                                <img src="{{ stats.thumbnail }}" alt="Canal" class="channel-avatar">
+                                <span>{{ channel }}</span>
+                            </div>
+                        </td>
+                        <td><strong>{{ stats.videos }}</strong></td>
+                        <td>{{ format_number(stats.views) }}</td>
+                        <td>{{ format_number(stats.likes) }}</td>
+                        <td>{{ format_number(stats.comments) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Análisis Temporal -->
+    <div class="section">
+        <h2 class="section-title">
+            <span class="section-icon">📅</span>
+            Análisis por Antigüedad
+        </h2>
+        
+        <div class="temporal-analysis">
+            <div class="time-period">
+                <h3>🔥 Últimos 6 meses ({{ last_6_months|length }} videos)</h3>
+                {% if last_6_months %}
+                <div class="video-list">
+                    {% for video in last_6_months %}
+                    <div class="video-item">
+                        <img src="{{ video.thumbnail_url }}" alt="Miniatura" class="video-thumb">
+                        <div class="video-details">
+                            <a href="{{ video.video_url }}" target="_blank" rel="noopener">{{ video.title }}</a>
+                            <div class="video-views">👁️ {{ format_number(video.views) }} visualizaciones</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="no-videos">No hay videos de los últimos 6 meses</p>
+                {% endif %}
+            </div>
+
+            <div class="time-period">
+                <h3>📈 Entre 6 meses y 1 año ({{ last_year|length }} videos)</h3>
+                {% if last_year %}
+                <div class="video-list">
+                    {% for video in last_year %}
+                    <div class="video-item">
+                        <img src="{{ video.thumbnail_url }}" alt="Miniatura" class="video-thumb">
+                        <div class="video-details">
+                            <a href="{{ video.video_url }}" target="_blank" rel="noopener">{{ video.title }}</a>
+                            <div class="video-views">👁️ {{ format_number(video.views) }} visualizaciones</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="no-videos">No hay videos de este período</p>
+                {% endif %}
+            </div>
+
+            <div class="time-period">
+                <h3>📚 Más de 1 año ({{ older_than_year|length }} videos)</h3>
+                {% if older_than_year %}
+                <div class="video-list">
+                    {% for video in older_than_year %}
+                    <div class="video-item">
+                        <img src="{{ video.thumbnail_url }}" alt="Miniatura" class="video-thumb">
+                        <div class="video-details">
+                            <a href="{{ video.video_url }}" target="_blank" rel="noopener">{{ video.title }}</a>
+                            <div class="video-views">👁️ {{ format_number(video.views) }} visualizaciones</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="no-videos">No hay videos de más de 1 año</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <a href="/seo" class="back-link">← Realizar nuevo análisis</a>
+</div>
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Error - Análisis de Volumen{% endblock %}
+
+{% block content %}
+<div class="error-container">
+    <div class="error-header">
+        <div class="error-icon">⚠️</div>
+        <h1>Error en el Análisis de Volumen</h1>
+    </div>
+    
+    <div class="error-content">
+        <div class="error-message">
+            <h3>No se pudo completar el análisis</h3>
+            <p>{{ error }}</p>
+        </div>
+        
+        {% if details %}
+        <div class="error-details">
+            <details>
+                <summary>Ver detalles del error</summary>
+                <div class="error-list">
+                    {% for detail in details %}
+                    <div class="error-item">{{ detail }}</div>
+                    {% endfor %}
+                </div>
+            </details>
+        </div>
+        {% endif %}
+        
+        <div class="error-suggestions">
+            <h4>Posibles soluciones:</h4>
+            <ul>
+                <li>🔑 <strong>Credenciales:</strong> Verifica que todas las credenciales de Google Ads estén configuradas correctamente</li>
+                <li>🔄 <strong>Tokens:</strong> Asegúrate de que el refresh token esté actualizado y sea válido</li>
+                <li>💳 <strong>Cuenta:</strong> Verifica que tu cuenta de Google Ads esté activa y tenga acceso a la API</li>
+                <li>🌐 <strong>Permisos:</strong> Confirma que la cuenta tenga permisos para usar Keyword Planner</li>
+                <li>📊 <strong>Límites:</strong> Puede que hayas alcanzado el límite de solicitudes de la API</li>
+            </ul>
+        </div>
+        
+        <div class="config-instructions">
+            <h4>📋 Configuración necesaria:</h4>
+            <p>Asegúrate de tener configuradas las siguientes variables de entorno:</p>
+            <ul>
+                <li><code>GOOGLE_ADS_DEVELOPER_TOKEN</code></li>
+                <li><code>GOOGLE_ADS_REFRESH_TOKEN</code></li>
+                <li><code>GOOGLE_ADS_CLIENT_ID</code></li>
+                <li><code>GOOGLE_ADS_CLIENT_SECRET</code></li>
+                <li><code>GOOGLE_ADS_CUSTOMER_ID</code> (opcional)</li>
+                <li><code>GOOGLE_ADS_LOGIN_CUSTOMER_ID</code> (opcional, para cuentas MCC)</li>
+            </ul>
+        </div>
+        
+        <div class="error-actions">
+            <a href="/keyword-volume" class="button">🔄 Intentar de nuevo</a>
+            <a href="/keyword-volume/check-config" class="button secondary">🔧 Verificar configuración</a>
+            <a href="/" class="button secondary">🏠 Volver al inicio</a>
+        </div>
+    </div>
+</div>
+
+<style>
+.error-list {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-top: 1rem;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.error-item {
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+    background-color: white;
+    border-left: 3px solid #dc3545;
+    border-radius: 0 4px 4px 0;
+    font-family: monospace;
+    font-size: 0.9rem;
+}
+
+.config-instructions {
+    background-color: #d1ecf1;
+    border: 1px solid #bee5eb;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.config-instructions code {
+    background-color: #f8f9fa;
+    padding: 0.2rem 0.4rem;
+    border-radius: 3px;
+    font-family: monospace;
+    font-size: 0.9rem;
+}
+</style>
+{% endblock %}
